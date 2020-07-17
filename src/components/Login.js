@@ -1,9 +1,8 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
 import { TextField, FormControlLabel, Checkbox, Button, Link, Grid, Container, CssBaseline, Typography} from '@material-ui/core/';
 import { makeStyles } from '@material-ui/core/styles';
-import {connect} from 'react-redux'
-import {login} from '../redux/actions/userActions'
 import {Redirect} from 'react-router-dom'
+import {UserContextConsumer} from '../context/userContext'
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -25,12 +24,10 @@ const useStyles = makeStyles((theme) => ({
     },
   }));
 
-function Login(props) {
+function Login() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [rememberMe, setRememberMe] = useState(false)
-  const [success, setSuccess] = useState(false)
-  const local = JSON.parse(localStorage.getItem("userState"))
 
   const classes = useStyles();
 
@@ -46,90 +43,87 @@ function Login(props) {
       setRememberMe(!rememberMe)
   }
 
-  const handleSubmit = e => {
-    e.preventDefault()
-    props.login({email, password}, rememberMe)
-      console.log(props)
-      if(props.errors.length === 0) {
-        setSuccess(true)
+  return (
+    <UserContextConsumer>
+      {
+        ({isAuthenticated, login, errors}) => {
+          console.log(errors)
+            return (isAuthenticated) ? <Redirect to="/" /> : (
+              <Container component="main" maxWidth="xs">
+                      <CssBaseline />
+                      <div className={classes.paper}>
+                        <Typography component="h1" variant="h5">
+                          Login
+                        </Typography>
+                        <form className={classes.form} noValidate onSubmit={e => { 
+                          e.preventDefault()
+                          login({email, password}, rememberMe)
+                          }}>
+                          <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                              <TextField
+                                variant="outlined"
+                                required
+                                fullWidth
+                                id="email"
+                                label="Email Address"
+                                name="email"
+                                autoComplete="email"
+                                value={email}
+                                onChange={handleEmailChange}
+                                error={errors.length > 0}
+                                helperText={errors.length > 0 ? errors[0] : ''}
+                              />
+                            </Grid>
+                            <Grid item xs={12}>
+                              <TextField
+                                variant="outlined"
+                                required
+                                fullWidth
+                                name="password"
+                                label="Password"
+                                type="password"
+                                id="password"
+                                autoComplete="current-password"
+                                value={password}
+                                onChange={handlePasswordChange}
+                              />
+                            </Grid>
+                            <Grid item xs={12}>
+                              <FormControlLabel
+                                control={<Checkbox value="allowExtraEmails" color="primary" name="rememberMe" checked={rememberMe} onChange={handleRememberMeChange} />}
+                                label="Remember me?"
+                              />
+                            </Grid>
+                          </Grid>
+                          <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            color="primary"
+                            className={classes.submit}
+                          >
+                            Login
+                          </Button>
+                          <Grid container justify="flex-end">
+                            <Grid item>
+                              <Link href="/register" variant="body2">
+                                Don't have an account yet? Sign up here
+                              </Link>
+                            </Grid>
+                          </Grid>
+                        </form>
+                      </div>
+                    </Container>
+                )
+          }
       }
-      else{
-        alert(props.errors)
-      }
-  }
-
-  return (success || JSON.parse(localStorage.getItem("userState")) || props.userState.session !== null) ? <Redirect to="/" /> : (
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <div className={classes.paper}>
-          <Typography component="h1" variant="h5">
-            Login
-          </Typography>
-          <form className={classes.form} noValidate onSubmit={handleSubmit}>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                  value={email}
-                  onChange={handleEmailChange}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="current-password"
-                  value={password}
-                  onChange={handlePasswordChange}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={<Checkbox value="allowExtraEmails" color="primary" name="rememberMe" checked={rememberMe} onChange={handleRememberMeChange} />}
-                  label="Remember me?"
-                />
-              </Grid>
-            </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-            >
-              Login
-            </Button>
-            <Grid container justify="flex-end">
-              <Grid item>
-                <Link href="/register" variant="body2">
-                  Don't have an account yet? Sign up here
-                </Link>
-              </Grid>
-            </Grid>
-          </form>
-        </div>
-      </Container>
+    </UserContextConsumer>
   )
-}
-
-const mapStateToProps = storeState => {
-  return {
-    userState : storeState.userState
-  }
+  
 }
 
 
-export default connect(mapStateToProps, {login})(Login)
+export default Login
 
 

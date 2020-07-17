@@ -6,12 +6,18 @@ import * as serviceWorker from './serviceWorker';
 import {BrowserRouter as Router} from 'react-router-dom'
 import {Provider} from 'react-redux'
 import store from './redux/reducers/store'
+import {UserContextProvider} from './context/userContext'
+import {TodoContextProvider} from './context/todoContext'
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <Router>
-        <App />
+        <UserContextProvider>
+          <TodoContextProvider>
+            <App />
+          </TodoContextProvider>
+        </UserContextProvider>
       </Router>
     </Provider>
   </React.StrictMode>,

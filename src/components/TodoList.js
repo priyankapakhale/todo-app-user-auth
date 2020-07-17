@@ -1,26 +1,33 @@
 import React from 'react'
 import TodoItem from './TodoItem'
 import { Paper, List} from "@material-ui/core";
+import {TodoContextConsumer} from '../context/todoContext'
 
-function TodoList(props) {
+function TodoList({todos}) {
     return (
-        <>
-            {props.items.length > 0 && (
-            <Paper style={{ margin: 16 }}>
-                <List style={{ overflow: "scroll" }}>
-                {props.items.map((todo, idx) => (
-                    <TodoItem
-                    {...todo}
-                    key={`TodoItem.${idx}`}
-                    divider={idx !== props.items.length - 1}
-                    onButtonClick={() => props.onItemRemove(todo.id)}
-                    onCheckBoxToggle={() => props.onItemCheck(todo.id)}
-                    />
-                ))}
-                </List>
-            </Paper>
-            )}
-        </>
+        <TodoContextConsumer>
+            {
+                ({editTodo, deleteTodo}) => (
+                    <>
+                        {todos.length > 0 && (
+                        <Paper style={{ margin: 16 }}>
+                            <List style={{ overflow: "scroll" }}>
+                            {todos.map((todo, idx) => (
+                                <TodoItem
+                                {...todo}
+                                key={`TodoItem.${idx}`}
+                                divider={idx !== todos.length - 1}
+                                onButtonClick={() => deleteTodo(todo.id)}
+                                onCheckBoxToggle={() => editTodo(todo.id)}
+                                />
+                            ))}
+                            </List>
+                        </Paper>
+                        )}
+                    </>
+                )
+            }
+        </TodoContextConsumer>
     )
 }
 

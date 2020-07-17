@@ -13,7 +13,7 @@ function TodoItem(props) {
         <ListItem divider={props.divider}>
             <Checkbox
                 onClick={props.onCheckBoxToggle}
-                checked={props.checked}
+                checked={props.completed}
                 disableRipple
             />
             <ListItemText primary={props.text} />

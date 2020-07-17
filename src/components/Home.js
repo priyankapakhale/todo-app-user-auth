@@ -4,47 +4,36 @@ import { Paper} from "@material-ui/core";
 import AddTodo from './AddTodo'
 import TodoList from './TodoList'
 import { useInputValue} from "../customHooks";
-import {Redirect} from 'react-router-dom'
-import {UserContextConsumer} from '../context/userContext'
 import { TodoContextConsumer } from '../context/todoContext';
 
 function Home(props) {
     const { inputValue, changeInput, clearInput} = useInputValue();
 
     return (
-        <UserContextConsumer>
+        <TodoContextConsumer>
             {
-                (({isAuthenticated}) => (
-                    !isAuthenticated ? <Redirect to="/login" /> : (
-                        <TodoContextConsumer>
-                            {
-                                ({todos, addTodo}) => {
-                                    return (
-                                        <Paper
-                                            elevation={0}
-                                            style={{ padding: 0, margin: 0, backgroundColor: "#fafafa" }}
-                                            >
-                                            <Header />
-                                            <AddTodo
-                                                inputValue={inputValue}
-                                                onInputChange={changeInput}
-                                                onButtonClick={() => {
-                                                    clearInput()
-                                                    addTodo(inputValue)
-                                                }}
-                                            />
-                                            <TodoList todos={todos} />
-                                            
-                                        </Paper>
-                                )}
-                            }
-                        </TodoContextConsumer>
-                    )
-
-                ))
+                ({todos, addTodo}) => {
+                    return (
+                        <Paper
+                            elevation={0}
+                            style={{ padding: 0, margin: 0, backgroundColor: "#fafafa" }}
+                            >
+                            <Header />
+                            <AddTodo
+                                inputValue={inputValue}
+                                onInputChange={changeInput}
+                                onButtonClick={() => {
+                                    clearInput()
+                                    addTodo(inputValue)
+                                }}
+                            />
+                            <TodoList todos={todos} />
+                            
+                        </Paper>
+                )}
             }
-        
-        </UserContextConsumer>
+        </TodoContextConsumer>
+                    
     )
 }
 
